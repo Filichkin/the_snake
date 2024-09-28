@@ -26,6 +26,9 @@ APPLE_COLOR = (255, 0, 0)
 # Цвет змейки
 SNAKE_COLOR = (0, 255, 0)
 
+# Цвет камня
+STONE_COLOR = (139, 69, 19)
+
 # Скорость движения змейки:
 SPEED = 8
 
@@ -95,6 +98,39 @@ class Apple(GameObject):
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
+class Stone(GameObject):
+    """Класс унаследованный от GameObject, описывающий камень
+    и действия с ним.
+    """
+
+    def __init__(self):
+        """Конструктор класса Stone."""
+        super().__init__()
+        self.position = self.randomize_position()
+        self.body_color = STONE_COLOR
+        self.last_stone = self.position
+
+    @staticmethod
+    def randomize_position():
+        """Устанавливает случайное положение камня на игровом поле."""
+        return (
+            randint(0, GRID_WIDTH) * GRID_SIZE,
+            randint(0, GRID_HEIGHT) * GRID_SIZE
+        )
+
+    def draw(self):
+        """Отрисовывает камень на игровой поверхности."""
+        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(screen, self.body_color, rect)
+        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+    def reset_stone(self):
+        """Затирает старый камень при съедании яблока."""
+        if self.last_stone:
+            last_stone = pygame.Rect(self.last_stone, (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_stone)
+
+
 class Snake(GameObject):
     """Класс унаследованный от GameObject, описывающий змейку
     и действия с ней.
@@ -118,12 +154,12 @@ class Snake(GameObject):
         x_point = head_position[0]
         y_point = head_position[1]
 
-        if x_point >= SCREEN_WIDTH:
+        if x_point > SCREEN_WIDTH:
             x_point = - GRID_SIZE
         elif x_point < 0:
             x_point = SCREEN_WIDTH
 
-        if y_point >= SCREEN_HEIGHT:
+        if y_point > SCREEN_HEIGHT:
             y_point = - GRID_SIZE
         elif y_point < 0:
             y_point = SCREEN_HEIGHT
@@ -161,7 +197,7 @@ class Snake(GameObject):
 
     def reset(self):
         """Сбрасывает змейку в начальное состояние после столкновения
-        с собой.
+        с собой или с камнем.
         """
         self.length = 1
         self.positions = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
@@ -199,18 +235,26 @@ def main():
     # Тут нужно создать экземпляры классов.
     apple = Apple()
     snake = Snake()
+    stone = Stone()
     while True:
         clock.tick(SPEED)
         pygame.display.update()
         handle_keys(snake)
         snake.update_direction(snake.next_direction)
         apple.draw()
+        stone.draw()
         snake.draw()
         snake.move()
         if snake.get_head_position() == apple.position:
             snake.positions.append(snake.last)
             apple = Apple()
+            stone.reset_stone()
+            stone = Stone()
         elif snake.get_head_position() in snake.snake_position():
+            screen.fill(BOARD_BACKGROUND_COLOR)
+            snake.reset()
+        elif (snake.get_head_position() == stone.position
+                or apple.position == stone.position):
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
 
