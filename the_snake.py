@@ -1,6 +1,6 @@
 from random import randint
-import pygame
 
+import pygame
 
 # Константы для размеров поля и сетки:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
@@ -137,6 +137,7 @@ class Snake(GameObject):
         self.last = self.positions.pop()
 
     def draw(self):
+        """Отрисовывает движение змейки."""
         for position in self.positions[:-1]:
             rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
             pygame.draw.rect(screen, self.body_color, rect)
@@ -173,6 +174,7 @@ class Snake(GameObject):
 
 
 def handle_keys(game_object):
+    """Управляет движениями клавиш."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -189,6 +191,7 @@ def handle_keys(game_object):
 
 
 def main():
+    """Функция запуска кода."""
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
