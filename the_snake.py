@@ -27,7 +27,7 @@ APPLE_COLOR = (255, 0, 0)
 SNAKE_COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
-SPEED = 3
+SPEED = 8
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -46,7 +46,9 @@ class GameObject:
     """
 
     def __init__(self):
-        """Конструктор класса GameObject."""
+        """Конструктор класса GameObject - инициализирует базовые атрибуты
+        объекта, такие как его позиция и цвет.
+        """
         self.position = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.body_color = None
 
@@ -137,7 +139,7 @@ class Snake(GameObject):
         self.last = self.positions.pop()
 
     def draw(self):
-        """Отрисовывает движение змейки."""
+        """Oтрисовывает змейку на экране, затирая след."""
         for position in self.positions[:-1]:
             rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
             pygame.draw.rect(screen, self.body_color, rect)
