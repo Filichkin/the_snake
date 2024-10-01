@@ -42,7 +42,6 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-# Тут опишите все классы игры.
 class GameObject:
     """GameObject — это базовый класс, от которого наследуются другие игровые
     объекты.
