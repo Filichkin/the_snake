@@ -69,7 +69,7 @@ class GameObject:
         в дочерних классах. Этот метод должен определять, как объект будет
         отрисовываться на экране. По умолчанию — pass.
         """
-        pass
+        raise NotImplementedError(__class__.__name__ + '.do_something')
 
 
 class Apple(GameObject):
@@ -77,15 +77,22 @@ class Apple(GameObject):
     и действия с ним.
     """
 
-    def __init__(self, position=None, body_color=APPLE_COLOR):
+    def __init__(self,
+                 occupied_positions=[COORDS_START_CENTER],
+                 position=None,
+                 body_color=APPLE_COLOR):
         """Конструктор класса Apple."""
         super().__init__(position, body_color)
-        self.randomize_position()
+        self.randomize_position(occupied_positions)
 
-    def randomize_position(self):
+    def randomize_position(self, occupied_positions):
         """Устанавливает случайное положение яблока на игровом поле."""
-        self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
-                         randint(0, GRID_SIZE) * GRID_SIZE)
+        while True:
+            new_position = (randint(0, GRID_SIZE) * GRID_SIZE,
+                            randint(0, GRID_SIZE) * GRID_SIZE)
+            if new_position not in occupied_positions:
+                self.position = new_position
+                break
 
     def draw(self):
         """Отрисовывает яблоко на игровой поверхности."""
@@ -102,24 +109,13 @@ class Stone(Apple):
     и действия с ним.
     """
 
-    def __init__(self, position=None, body_color=STONE_COLOR):
+    def __init__(self,
+                 occupied_positions=[COORDS_START_CENTER],
+                 position=None,
+                 body_color=STONE_COLOR):
         """Конструктор класса Stone."""
-        super().__init__(position, body_color)
-        self.randomize_position()
-
-    def randomize_position(self):
-        """Устанавливает случайное положение яблока на игровом поле."""
-        self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
-                         randint(0, GRID_SIZE) * GRID_SIZE)
-
-    def draw(self):
-        """Отрисовывает камень на игровой поверхности."""
-        self.draw_rect(screen,
-                       self.body_color,
-                       [self.position[0],
-                        self.position[1],
-                        GRID_SIZE,
-                        GRID_SIZE])
+        super().__init__(occupied_positions, position, body_color)
+        self.randomize_position(occupied_positions)
 
     def reset_stone(self):
         """Затирает старый камень при съедании яблока."""
@@ -213,25 +209,24 @@ def handle_keys(game_object):
 def main():
     """Функция запуска кода."""
     pygame.init()
-    apple = Apple()
     snake = Snake()
-    stone = Stone()
+    stone = Stone(snake.positions)
+    apple = Apple(snake.positions)
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
         snake.move()
         if snake.get_head_position() == apple.position:
             stone.reset_stone()
-            apple.randomize_position()
-            stone.randomize_position()
+            apple.randomize_position(snake.positions)
+            stone.randomize_position(snake.positions)
             snake.length += 1
         else:
             snake.hide_tail()
             apple.draw()
             stone.draw()
-
-        if (snake.positions.count(snake.get_head_position()) > 1 or
-                snake.get_head_position() == stone.position):
+        if (snake.positions.count(snake.get_head_position()) > 1
+                or snake.get_head_position() == stone.position):
             snake.reset()
             screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
