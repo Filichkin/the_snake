@@ -76,7 +76,7 @@ class Apple(GameObject):
     def __init__(self):
         """Конструктор класса Apple."""
         super().__init__(body_color=APPLE_COLOR)
-        self.randomize_position(occupied_positions=[COORDS_START_CENTER])
+        self.randomize_position()
 
     def randomize_position(self, occupied_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока на игровом поле."""
@@ -195,7 +195,7 @@ def main():
         if snake.get_head_position() == apple.position:
             stone.reset_stone()
             apple.randomize_position(snake.positions)
-            stone.randomize_position(snake.positions)
+            stone.randomize_position()
             snake.length += 1
         else:
             apple.draw()
