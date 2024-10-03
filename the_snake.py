@@ -73,20 +73,25 @@ class Apple(GameObject):
     и действия с ним.
     """
 
-    def __init__(self):
+    def __init__(self, body_color=APPLE_COLOR):
         """Конструктор класса Apple."""
-        super().__init__(body_color=APPLE_COLOR)
+        super().__init__()
+        self.body_color = body_color
         self.randomize_position()
 
-    def randomize_position(self, occupied_positions=[COORDS_START_CENTER]):
-        """Устанавливает случайное положение яблока на игровом поле."""
+    def randomize_position(self,
+                           snake_positions=[COORDS_START_CENTER],
+                           aple_position=[COORDS_START_CENTER]):
+        """Устанавливает случайное положение яблока и камня на игровом поле."""
         new_position = (randint(0, GRID_SIZE) * GRID_SIZE,
                         randint(0, GRID_SIZE) * GRID_SIZE)
-        if new_position not in occupied_positions:
-            self.position = new_position
+        if new_position in snake_positions or new_position in aple_position:
+            new_position = (randint(0, GRID_SIZE) * GRID_SIZE,
+                            randint(0, GRID_SIZE) * GRID_SIZE)
+        self.position = new_position
 
     def draw(self):
-        """Отрисовывает яблоко на игровой поверхности."""
+        """Отрисовывает яблоко и камень на игровой поверхности."""
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
@@ -99,9 +104,7 @@ class Stone(Apple):
 
     def __init__(self):
         """Конструктор класса Stone."""
-        super().__init__()
-        self.body_color = STONE_COLOR
-        self.randomize_position()
+        super().__init__(body_color=STONE_COLOR)
 
     def reset_stone(self):
         """Затирает старый камень при съедании яблока."""
@@ -138,8 +141,8 @@ class Snake(GameObject):
         self.positions.insert(0, (new_x, new_y))
         if len(self.positions) > self.length:
             self.last = self.positions.pop()
-            rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, rect)
+        else:
+            self.last = None
 
     def draw(self):
         """Oтрисовывает змейку на экране."""
@@ -148,6 +151,10 @@ class Snake(GameObject):
         rect = pygame.Rect(x_point, y_point, GRID_SIZE, GRID_SIZE)
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
+        if self.last:
+            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
         """Возвращает позицию головы змейки."""
@@ -192,17 +199,18 @@ def main():
         handle_keys(snake)
         snake.update_direction()
         snake.move()
+        apple.draw()
+        stone.draw()
         if snake.get_head_position() == apple.position:
             stone.reset_stone()
             apple.randomize_position(snake.positions)
-            stone.randomize_position()
+            stone.randomize_position(snake.positions, apple.position)
             snake.length += 1
-        else:
-            apple.draw()
-            stone.draw()
-        if (snake.positions.count(snake.get_head_position()) > 1
+        elif (snake.positions.count(snake.get_head_position()) > 1
                 or snake.get_head_position() == stone.position):
             snake.reset()
+            apple.randomize_position(snake.positions)
+            stone.randomize_position(snake.positions, apple.position)
             screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
         pygame.display.update()
