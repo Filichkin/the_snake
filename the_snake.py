@@ -80,12 +80,11 @@ class Apple(GameObject):
         self.randomize_position()
 
     def randomize_position(self,
-                           snake_positions=[COORDS_START_CENTER],
-                           aple_position=[COORDS_START_CENTER]):
+                           occuped_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
         new_position = (randint(0, GRID_SIZE) * GRID_SIZE,
                         randint(0, GRID_SIZE) * GRID_SIZE)
-        if new_position in snake_positions or new_position in aple_position:
+        while new_position in occuped_positions:
             new_position = (randint(0, GRID_SIZE) * GRID_SIZE,
                             randint(0, GRID_SIZE) * GRID_SIZE)
         self.position = new_position
@@ -204,13 +203,13 @@ def main():
         if snake.get_head_position() == apple.position:
             stone.reset_stone()
             apple.randomize_position(snake.positions)
-            stone.randomize_position(snake.positions, apple.position)
+            stone.randomize_position(snake.positions + list(apple.position))
             snake.length += 1
         elif (snake.positions.count(snake.get_head_position()) > 1
                 or snake.get_head_position() == stone.position):
             snake.reset()
             apple.randomize_position(snake.positions)
-            stone.randomize_position(snake.positions, apple.position)
+            stone.randomize_position(snake.positions + list(apple.position))
             screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
         pygame.display.update()
