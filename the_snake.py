@@ -82,11 +82,10 @@ class Apple(GameObject):
     def randomize_position(self,
                            occuped_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
-        while True:
-            self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
-                             randint(0, GRID_SIZE) * GRID_SIZE)
-            if self.position not in occuped_positions:
-                break
+        self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
+                         randint(0, GRID_SIZE) * GRID_SIZE)
+        if self.position in occuped_positions:
+            self.randomize_position(occuped_positions)
 
     def draw(self):
         """Отрисовывает яблоко и камень на игровой поверхности."""
