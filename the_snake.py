@@ -85,8 +85,8 @@ class Apple(GameObject):
     def randomize_position(self,
                            occuped_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
-        self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
-                         randint(0, GRID_SIZE) * GRID_SIZE)
+        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                         randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
         if self.position in occuped_positions:
             self.randomize_position(occuped_positions)
 
@@ -111,8 +111,8 @@ class Stone(GameObject):
     def stone_randomize_position(self,
                                  occuped_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
-        self.stone_positions = [(randint(0, GRID_SIZE) * GRID_SIZE,
-                                 randint(0, GRID_SIZE) * GRID_SIZE)
+        self.stone_positions = [(randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                                 randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
                                 for _ in range(STONE_QTY)]
         for s in self.stone_positions:
             if s in occuped_positions:
