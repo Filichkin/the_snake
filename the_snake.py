@@ -36,7 +36,7 @@ STONE_COLOR = (139, 69, 19)
 SPEED = 8
 
 # Количество камней:
-STONE_QTY = 5
+STONES_QTY = 5
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -113,7 +113,7 @@ class Stone(GameObject):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
         self.stone_positions = [(randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                                  randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
-                                for _ in range(STONE_QTY)]
+                                for _ in range(STONES_QTY)]
         for s in self.stone_positions:
             if s in occuped_positions:
                 self.stone_randomize_position(occuped_positions)
