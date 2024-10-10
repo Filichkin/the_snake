@@ -106,17 +106,17 @@ class Stone(GameObject):
         """Конструктор класса Stone."""
         super().__init__()
         self.body_color = body_color
-        self.stone_randomize_position()
+        self.stones_randomize_positions()
 
-    def stone_randomize_position(self,
-                                 occuped_positions=[COORDS_START_CENTER]):
+    def stones_randomize_positions(self,
+                                   occuped_positions=[COORDS_START_CENTER]):
         """Устанавливает случайное положение яблока и камня на игровом поле."""
         self.stone_positions = [(randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                                  randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
                                 for _ in range(STONES_QTY)]
         for s in self.stone_positions:
             if s in occuped_positions:
-                self.stone_randomize_position(occuped_positions)
+                self.stones_randomize_positions(occuped_positions)
                 break
     
     def draw(self):
@@ -225,14 +225,14 @@ def main():
         if snake.get_head_position() == apple.position:
             stone.reset_stone()
             apple.randomize_position(snake.positions)
-            stone.stone_randomize_position(
+            stone.stones_randomize_positions(
                 snake.positions + list(apple.position))
             snake.length += 1
         elif (snake.positions.count(snake.get_head_position()) > 1
                 or snake.get_head_position() in stone.stone_positions):
             snake.reset()
             apple.randomize_position(snake.positions)
-            stone.stone_randomize_position(
+            stone.stones_randomize_positions(
                 snake.positions + list(apple.position))
             screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
